@@ -52,6 +52,15 @@ function wpmlrestapi_register_api_field($post_type) {
 			'schema'          => null,
 		)
 	);
+	
+	register_rest_field( $post_type,
+		'wpml_current_language_code',
+		array(
+			'get_callback'    => 'wpmlrestapi_slug_get_current_language_code',
+			'update_callback' => null,
+			'schema'          => null,
+		)
+	);
 
 	register_rest_field( $post_type,
 		'wpml_translations',
@@ -94,7 +103,7 @@ function wpmlrestapi_slug_get_translations( $object, $field_name, $request ) {
 			$href .= $thisPost->post_name . '/';
 		}
 
-		$translations[] = array('locale' => $language['default_locale'], 'id' => $thisPost->ID, 'post_title' => $thisPost->post_title, 'href' => $href);
+		$translations[] = array('locale' => $language['default_locale'], 'language_code' => $language['language_code'], 'id' => $thisPost->ID, 'post_title' => $thisPost->post_title, 'href' => $href);
 	}
 
 	return $translations;
@@ -112,4 +121,18 @@ function wpmlrestapi_slug_get_translations( $object, $field_name, $request ) {
 function wpmlrestapi_slug_get_current_locale( $object, $field_name, $request ) {
 	$langInfo = wpml_get_language_information($object);
 	return $langInfo['locale'];
+}
+
+/**
+ * Retrieve the current language code
+ *
+ * @param array $object Details of current post.
+ * @param string $field_name Name of field.
+ * @param WP_REST_Request $request Current request
+ *
+ * @return mixed
+ */
+function wpmlrestapi_slug_get_current_language_code( $object, $field_name, $request ) {
+	$langInfo = wpml_get_language_information($object);
+	return $langInfo['language_code'];
 }
